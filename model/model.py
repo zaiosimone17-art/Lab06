@@ -31,16 +31,48 @@ class DepositoStrumenti:
         self._responsabile = responsabile
 
     def get_strumenti(self) -> list[Strumento] | None:
-        """
-            Funzione che legge tutti gli strumenti nel database
-            :return: una lista con tutti gli strumenti presenti oppure None
-        """
-        # TODO
+            cnx = get_connection()
+            result = []
+            if cnx is not None:
+                cursor = cnx.cursor(dictionary=True)
+                query = "SELECT * FROM strumento"
 
+                cursor.execute(query)
+                for row in cursor:
+                    s = Strumento(
+                        row["codice"],
+                        row["tipo"],
+                        row["marca"],
+                        row["anno_acquisto"],
+                        row["valore"]
+                    )
+                    result.append(s)
+
+                cursor.close()
+                cnx.close()
+
+            return result
     def cerca_strumenti_per_tipo(self, tipo) -> list[Strumento] | None:
-        """
-            Funzione che recupera una lista con tutti gli strumenti presenti nel database di un certo tipo
-            :param tipo: il tipo dello strumento (es. "Chitarra")
-            :return: una lista con tutti gli strumenti del tipo indicato oppure None
-        """
-        # TODO
+        cnx = get_connection()
+        result = []
+        if cnx is not None:
+            cursor = cnx.cursor(dictionary=True)
+
+
+            query = "SELECT * FROM strumento WHERE tipo = %s"
+
+            cursor.execute(query, (tipo,))
+            for row in cursor:
+                s = Strumento(
+                    row["codice"],
+                    row["tipo"],
+                    row["marca"],
+                    row["anno_acquisto"],
+                    row["valore"]
+                )
+                result.append(s)
+
+            cursor.close()
+            cnx.close()
+
+        return result
